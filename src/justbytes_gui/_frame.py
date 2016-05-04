@@ -21,6 +21,28 @@ import Tkinter
 
 import justbytes
 
+
+class ValueConfig(object):
+
+    CONFIG = justbytes.RangeConfig.VALUE_CONFIG
+
+    def __init__(self):
+        kwargs = dict()
+
+    def create(self, master):
+        self.VALUE = Tkinter.LabelFrame(master, text="Value")
+        self.VALUE.pack({"side": "left"})
+        self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base")
+        self.BASE_ENTRY = Tkinter.Entry(self.VALUE)
+        self.BASE_ENTRY.insert(0, self.CONFIG.base)
+        self.BASE_LABEL.grid(row=0, column=0)
+        self.BASE_ENTRY.grid(row=0, column=1)
+
+    def get(self):
+        kwargs['base'] = self.BASE_ENTRY.get()
+        return justbytes.ValueConfig(*kwargs)
+
+
 class RangeFrame(Tkinter.Frame):
     """
     Simple class to display a single Range value.
@@ -29,17 +51,6 @@ class RangeFrame(Tkinter.Frame):
         Tkinter.Frame.__init__(self, master)
         self.value = None
         self.pack()
-
-    def createValueOptions(self, master):
-        config = justbytes.RangeConfig.VALUE_CONFIG
-
-        self.VALUE = Tkinter.LabelFrame(master, text="Value")
-        self.VALUE.pack({"side": "left"})
-        self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base")
-        self.BASE_ENTRY = Tkinter.Entry(self.VALUE)
-        self.BASE_ENTRY.insert(0, config.base)
-        self.BASE_LABEL.grid(row=0, column=0)
-        self.BASE_ENTRY.grid(row=0, column=1)
 
     def createStripOptions(self, master):
         config = justbytes.RangeConfig.DISPLAY_CONFIG.strip_config
@@ -87,10 +98,12 @@ class RangeFrame(Tkinter.Frame):
         self.QUIT = Tkinter.Button(self, text="Quit", command=self.quit)
         self.QUIT.pack({"side": "bottom"})
 
-        self.DISPLAY = Tkinter.Label(self, text=str(self.value))
+        self.DISPLAY = \
+           Tkinter.Label(self, text=str(self.value), font=("Helvetica", 32))
         self.DISPLAY.pack({"side": "top"})
 
-        self.createValueOptions(self)
+        self.VALUE = ValueConfig()
+        self.VALUE.create(self)
 
         self.DISPLAY = Tkinter.LabelFrame(self, text="Display")
         self.DISPLAY.pack({"side": "left"})
