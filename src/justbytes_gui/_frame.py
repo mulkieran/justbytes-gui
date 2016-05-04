@@ -35,8 +35,9 @@ class ValueConfig(object):
         self.VALUE.pack({"side": "left"})
 
         self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base:")
-        self.BASE_ENTRY = Tkinter.Entry(self.VALUE)
-        self.BASE_ENTRY.insert(0, self.CONFIG.base)
+        self.BASE_VAR = Tkinter.StringVar()
+        self.BASE_VAR.set(self.CONFIG.base)
+        self.BASE_ENTRY = Tkinter.Entry(self.VALUE, textvariable=self.BASE_VAR)
         self.BASE_LABEL.grid(row=0, column=0)
         self.BASE_ENTRY.grid(row=0, column=1)
 
@@ -45,7 +46,7 @@ class ValueConfig(object):
         self.BINARY_UNITS_VAR = Tkinter.BooleanVar()
         self.BINARY_UNITS_VAR.set(self.CONFIG.binary_units)
         self.BINARY_UNITS_CHECKBUTTON = \
-           Tkinter.Checkbutton(self.VALUE,variable=self.BINARY_UNITS_VAR)
+           Tkinter.Checkbutton(self.VALUE, variable=self.BINARY_UNITS_VAR)
         self.BINARY_UNITS_LABEL.grid(row=1, column=0)
         self.BINARY_UNITS_CHECKBUTTON.grid(row=1, column=1)
 
@@ -53,7 +54,7 @@ class ValueConfig(object):
         kwargs = dict()
 
         try:
-            kwargs['base'] = int(self.BASE_ENTRY.get())
+            kwargs['base'] = int(self.BASE_VAR.get())
         except ValueError:
             raise GUIValueError("base value must be an integer greater than 1")
 
