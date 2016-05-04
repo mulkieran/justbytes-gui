@@ -22,6 +22,10 @@ import Tkinter
 import justbytes
 
 
+class GUIValueError(Exception):
+    pass
+
+
 class ValueConfig(object):
 
     CONFIG = justbytes.RangeConfig.VALUE_CONFIG
@@ -37,8 +41,13 @@ class ValueConfig(object):
 
     def get(self):
         kwargs = dict()
-        kwargs['base'] = int(self.BASE_ENTRY.get())
-        return justbytes.ValueConfig(**kwargs)
+
+        try:
+            kwargs['base'] = int(self.BASE_ENTRY.get())
+        except ValueError:
+            raise GUIValueError("base value must be an integer greater than 1")
+
+        return kwargs
 
 
 class RangeFrame(Tkinter.Frame):
@@ -90,7 +99,10 @@ class RangeFrame(Tkinter.Frame):
         self.USE_LETTERS_CHECKBUTTON.grid(row=1, column=1)
 
     def show(self):
-        value_config = self.VALUE.get()
+        try:
+            value_config = justbytes.ValueConfig(**self.VALUE.get())
+        except (GUIValueError, justbytes.RangeError):
+            return #FIXME, set label
         display_config = justbytes.RangeConfig.DISPLAY_CONFIG
         self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
