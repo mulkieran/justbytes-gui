@@ -33,11 +33,21 @@ class ValueConfig(object):
     def create(self, master):
         self.VALUE = Tkinter.LabelFrame(master, text="Value")
         self.VALUE.pack({"side": "left"})
-        self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base")
+
+        self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base:")
         self.BASE_ENTRY = Tkinter.Entry(self.VALUE)
         self.BASE_ENTRY.insert(0, self.CONFIG.base)
         self.BASE_LABEL.grid(row=0, column=0)
         self.BASE_ENTRY.grid(row=0, column=1)
+
+        self.BINARY_UNITS_LABEL = \
+           Tkinter.Label(self.VALUE, text="Use IEC units?")
+        self.BINARY_UNITS_VAR = Tkinter.BooleanVar()
+        self.BINARY_UNITS_VAR.set(self.CONFIG.binary_units)
+        self.BINARY_UNITS_CHECKBUTTON = \
+           Tkinter.Checkbutton(self.VALUE,variable=self.BINARY_UNITS_VAR)
+        self.BINARY_UNITS_LABEL.grid(row=1, column=0)
+        self.BINARY_UNITS_CHECKBUTTON.grid(row=1, column=1)
 
     def get(self):
         kwargs = dict()
@@ -46,6 +56,8 @@ class ValueConfig(object):
             kwargs['base'] = int(self.BASE_ENTRY.get())
         except ValueError:
             raise GUIValueError("base value must be an integer greater than 1")
+
+        kwargs['binary_units'] = self.BINARY_UNITS_VAR.get()
 
         return kwargs
 
@@ -101,8 +113,11 @@ class RangeFrame(Tkinter.Frame):
     def show(self):
         try:
             value_config = justbytes.ValueConfig(**self.VALUE.get())
-        except (GUIValueError, justbytes.RangeError):
-            return #FIXME, set label
+        except (GUIValueError, justbytes.RangeError) as err:
+            self.ERROR_STR.set(err)
+            return
+
+        self.ERROR_STR.set("")
         display_config = justbytes.RangeConfig.DISPLAY_CONFIG
         self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
@@ -121,6 +136,11 @@ class RangeFrame(Tkinter.Frame):
            font=("Helvetica", 32)
         )
         self.DISPLAY.pack({"side": "top"})
+
+        self.ERROR_STR = Tkinter.StringVar()
+        self.ERROR_STR.set("")
+        self.ERROR = Tkinter.Label(self, textvariable=self.ERROR_STR, fg="red")
+        self.ERROR.pack({"side": "top"})
 
         self.VALUE = ValueConfig()
         self.VALUE.create(self)
