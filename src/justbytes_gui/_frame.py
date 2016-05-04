@@ -91,15 +91,23 @@ class RangeFrame(Tkinter.Frame):
         self.USE_LETTERS_LABEL.grid(row=1, column=0)
         self.USE_LETTERS_CHECKBUTTON.grid(row=1, column=1)
 
+    def show(self):
+        self.DISPLAY_STR.set("show")
+
     def createWidgets(self):
-        self.SHOW = Tkinter.Button(self, text="Show")
+        self.SHOW = Tkinter.Button(self, text="Show", command=self.show)
         self.SHOW.pack({"side": "bottom"})
 
         self.QUIT = Tkinter.Button(self, text="Quit", command=self.quit)
         self.QUIT.pack({"side": "bottom"})
 
-        self.DISPLAY = \
-           Tkinter.Label(self, text=str(self.value), font=("Helvetica", 32))
+        self.DISPLAY_STR = Tkinter.StringVar()
+        self.DISPLAY_STR.set(str(self.value))
+        self.DISPLAY = Tkinter.Label(
+           self,
+           textvariable=self.DISPLAY_STR,
+           font=("Helvetica", 32)
+        )
         self.DISPLAY.pack({"side": "top"})
 
         self.VALUE = ValueConfig()
