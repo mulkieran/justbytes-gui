@@ -26,9 +26,6 @@ class ValueConfig(object):
 
     CONFIG = justbytes.RangeConfig.VALUE_CONFIG
 
-    def __init__(self):
-        kwargs = dict()
-
     def create(self, master):
         self.VALUE = Tkinter.LabelFrame(master, text="Value")
         self.VALUE.pack({"side": "left"})
@@ -39,8 +36,9 @@ class ValueConfig(object):
         self.BASE_ENTRY.grid(row=0, column=1)
 
     def get(self):
-        kwargs['base'] = self.BASE_ENTRY.get()
-        return justbytes.ValueConfig(*kwargs)
+        kwargs = dict()
+        kwargs['base'] = int(self.BASE_ENTRY.get())
+        return justbytes.ValueConfig(**kwargs)
 
 
 class RangeFrame(Tkinter.Frame):
@@ -92,7 +90,9 @@ class RangeFrame(Tkinter.Frame):
         self.USE_LETTERS_CHECKBUTTON.grid(row=1, column=1)
 
     def show(self):
-        self.DISPLAY_STR.set("show")
+        value_config = self.VALUE.get()
+        display_config = justbytes.RangeConfig.DISPLAY_CONFIG
+        self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
     def createWidgets(self):
         self.SHOW = Tkinter.Button(self, text="Show", command=self.show)
