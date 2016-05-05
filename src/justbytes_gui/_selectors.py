@@ -42,3 +42,18 @@ class JustSelector(WidgetSelector):
         :param type python_type: the python type being handled
         """
         self.python_type = python_type
+
+
+class MaybeSelector(WidgetSelector):
+    """
+    Widget only has to represent a single type or None chosen.
+    """
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, python_type):
+        """
+        Initializer.
+
+        :param type python_type: the python type being handled
+        """
+        self.python_type = python_type

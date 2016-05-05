@@ -23,8 +23,10 @@ import justbytes
 from ._errors import GUIValueError
 
 from ._gadgets import JustEntry
+from ._gadgets import MaybeEntry
 
 from ._selectors import JustSelector
+from ._selectors import MaybeSelector
 
 from ._util import getVar
 
@@ -36,7 +38,8 @@ class ValueConfig(object):
     _FIELD_MAP = {
        "base": ("Base:", JustSelector(int)),
        "binary_units": ("Use IEC units?", JustSelector(bool)),
-       "exact_value": ("Get exact value?", JustSelector(bool))
+       "exact_value": ("Get exact value?", JustSelector(bool)),
+       "max_places": ("Maximum number of digits right of radix:", MaybeSelector(int))
     }
 
     def __init__(self, master):
@@ -54,7 +57,14 @@ class ValueConfig(object):
                    label_text,
                    widget_selector.python_type
                 )
-                entry.widget.pack({"side": "top"})
+            elif isinstance(widget_selector, MaybeSelector):
+                entry = MaybeEntry(
+                   self.VALUE,
+                   getattr(self.CONFIG, config_attr),
+                   label_text,
+                   widget_selector.python_type
+                )
+            entry.widget.pack({"side": "top"})
             self._field_vars[config_attr] = entry
 
     def get(self):
