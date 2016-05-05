@@ -183,31 +183,43 @@ class RangeFrame(Tkinter.Frame):
         self.pack()
 
     def show(self):
+        """
+        Show the resulting string.
+        """
         try:
             value_config = justbytes.ValueConfig(**self.VALUE.get())
+            digits_config = justbytes.DigitsConfig(**self.DIGITS.get())
+            strip_config = justbytes.StripConfig(**self.STRIP.get())
+            display_config = justbytes.DisplayConfig(
+               strip_config=strip_config,
+               digits_config=digits_config,
+               **self.MISC.get()
+            )
         except (GUIValueError, justbytes.RangeError) as err:
             self.ERROR_STR.set(err)
             return
 
         self.ERROR_STR.set("")
-        display_config = justbytes.RangeConfig.DISPLAY_CONFIG
         self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
     def createWidgets(self):
-        show = Tkinter.Button(self, text="Show", command=self.show)
-        show.pack({"side": "bottom"})
+        """
+        Create the widgets.
+        """
+        show_button = Tkinter.Button(self, text="Show", command=self.show)
+        show_button.pack({"side": "bottom"})
 
-        quit = Tkinter.Button(self, text="Quit", command=self.quit)
-        quit.pack({"side": "bottom"})
+        quit_button = Tkinter.Button(self, text="Quit", command=self.quit)
+        quit_button.pack({"side": "bottom"})
 
         self.DISPLAY_STR = Tkinter.StringVar()
         self.DISPLAY_STR.set(str(self.value))
-        display = Tkinter.Label(
+        display_label = Tkinter.Label(
            self,
            textvariable=self.DISPLAY_STR,
            font=("Helvetica", 32)
         )
-        display.pack({"side": "top"})
+        display_label.pack({"side": "top"})
 
         self.ERROR_STR = Tkinter.StringVar()
         self.ERROR_STR.set("")
