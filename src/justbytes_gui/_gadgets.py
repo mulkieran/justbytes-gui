@@ -16,14 +16,38 @@
 """
 Hierarchy of gadgets.
 """
+import abc
 import Tkinter
+
+from six import add_metaclass
 
 from ._errors import GUIValueError
 
 from ._util import getVar
 
 
-class JustEntry(object):
+@add_metaclass(abc.ABCMeta)
+class Entry(object):
+    """
+    Top level class for gadgets.
+    """
+    # pylint: disable=too-few-public-methods
+
+    @abc.abstractmethod
+    def get(self):
+        """
+        Get the value.
+
+        :returns: the current value for the widget, converted to the type
+        :rtype: object
+
+        :raises ValueError:
+        """
+        raise NotImplementedError() # pragma: no cover
+
+    widget = abc.abstractproperty(doc="top-level widget")
+
+class JustEntry(Entry):
     """
     Entry for JustSelector.
     """
@@ -59,18 +83,10 @@ class JustEntry(object):
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        """
-        Get the value.
-
-        :returns: the current value for the widget, converted to the type
-        :rtype: object
-
-        :raises ValueError:
-        """
         return self.VAR.get()
 
 
-class MaybeEntry(object):
+class MaybeEntry(Entry):
     """
     Entry for maybe situation.
     """
@@ -105,18 +121,10 @@ class MaybeEntry(object):
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        """
-        Get the value.
-
-        :returns: the current value for the widget, converted to the type
-        :rtype: object
-
-        :raises ValueError:
-        """
         return None if self.NONE_VAR.get() else self.VAR.get()
 
 
-class ChoiceEntry(object):
+class ChoiceEntry(Entry):
     """
     Entry for ChoiceSelector.
     """
@@ -155,12 +163,4 @@ class ChoiceEntry(object):
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        """
-        Get the value.
-
-        :returns: the current value for the widget, converted to the type
-        :rtype: object
-
-        :raises ValueError:
-        """
         return self._INDICES[self.VAR.get()]

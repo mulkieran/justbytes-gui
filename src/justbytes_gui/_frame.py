@@ -79,6 +79,7 @@ class Config(object):
                    widget_selector.python_type
                 )
             elif isinstance(widget_selector, MaybeSelector):
+                # pylint: disable=redefined-variable-type
                 entry = MaybeEntry(
                    self.VALUE,
                    getattr(self.CONFIG, config_attr),
@@ -86,6 +87,7 @@ class Config(object):
                    widget_selector.python_type
                 )
             elif isinstance(widget_selector, ChoiceSelector):
+                # pylint: disable=redefined-variable-type
                 entry = ChoiceEntry(
                    self.VALUE,
                    getattr(self.CONFIG, config_attr),
@@ -182,30 +184,6 @@ class RangeFrame(Tkinter.Frame):
         self.value = None
         self.pack()
 
-    def show(self):
-        """
-        Show the resulting string.
-        """
-        try:
-            value_config = justbytes.ValueConfig(**self.VALUE.get())
-            digits_config = justbytes.DigitsConfig(**self.DIGITS.get())
-            strip_config = justbytes.StripConfig(**self.STRIP.get())
-            display_config = justbytes.DisplayConfig(
-               strip_config=strip_config,
-               digits_config=digits_config,
-               **self.MISC.get()
-            )
-        except (GUIValueError, justbytes.RangeError) as err:
-            self.ERROR_STR.set(err)
-            return
-
-        self.ERROR_STR.set("")
-        self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
-
-    def createWidgets(self):
-        """
-        Create the widgets.
-        """
         show_button = Tkinter.Button(self, text="Show", command=self.show)
         show_button.pack({"side": "bottom"})
 
@@ -213,7 +191,6 @@ class RangeFrame(Tkinter.Frame):
         quit_button.pack({"side": "bottom"})
 
         self.DISPLAY_STR = Tkinter.StringVar()
-        self.DISPLAY_STR.set(str(self.value))
         display_label = Tkinter.Label(
            self,
            textvariable=self.DISPLAY_STR,
@@ -235,6 +212,26 @@ class RangeFrame(Tkinter.Frame):
         self.STRIP = StripConfig(display, "Strip Options")
         self.MISC = MiscDisplayConfig(display, "Miscellaneous Display Options")
 
+    def show(self):
+        """
+        Show the resulting string.
+        """
+        try:
+            value_config = justbytes.ValueConfig(**self.VALUE.get())
+            digits_config = justbytes.DigitsConfig(**self.DIGITS.get())
+            strip_config = justbytes.StripConfig(**self.STRIP.get())
+            display_config = justbytes.DisplayConfig(
+               strip_config=strip_config,
+               digits_config=digits_config,
+               **self.MISC.get()
+            )
+        except (GUIValueError, justbytes.RangeError) as err:
+            self.ERROR_STR.set(err)
+            return
+
+        self.ERROR_STR.set("")
+        self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
+
 
 def show(a_range):
     """
@@ -245,6 +242,6 @@ def show(a_range):
     root = Tkinter.Tk()
     frame = RangeFrame(master=root)
     frame.value = a_range
-    frame.createWidgets()
+    frame.show()
     frame.mainloop()
     root.destroy()
