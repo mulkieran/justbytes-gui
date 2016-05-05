@@ -22,43 +22,118 @@ import Tkinter
 import justbytes
 
 
-class GUIValueError(Exception):
+class GUIError(Exception):
+    """
+    Superclass of all errors for this package.
+    """
     pass
+
+
+class GUIValueError(GUIError):
+    """
+    Raised if argument value is bad.
+    """
+    pass
+
+
+def getVar(python_type):
+    """
+    Returns a Tkinter variable for the given python type.
+
+    :param type python_type: the python type
+    :returns: appropriate Tkinter *Var object
+    :rtype: Tkinter.Variable
+    """
+    if python_type == bool:
+        return Tkinter.BooleanVar()
+    if python_type == float:
+        return Tkinter.DoubleVar()
+    if python_type == int:
+        return Tkinter.IntVar()
+    if python_type == str:
+        return Tkinter.StringVar()
+    raise GUIValueError("Unexpected python_type %s" % python_type)
+
+
+def getWidget(master, variable, python_type):
+   """
+   Get the widget for this python type.
+
+   :param Tkinter.Widget master: the master widget
+   :param Tkinter.Variable variable: variable for detecting changes
+   :param type python_type: the python type that decided the rest
+
+   :returns: an appropriate widget
+   :rtype: Tkinter.Widget
+   """
+   if python_type == bool:
+       return Tkinter.Checkbutton(master, variable=variable)
+   if python_type in (int, float, str):
+       return Tkinter.Entry(master, textvariable=variable)
+   raise GUIValueError("Unexpected python_type %s" % python_type)
+
+
+def getField(master, config, config_attr, label_text, python_type):
+    """
+    Get the significant parts of the field.
+
+    :param Tkinter.Widget master: the master of this field
+    :param object config: a justbytes configuration object
+    :param str config_attr: the configuration attribute for this field
+    :param str label_text: text to apply to the label
+    :param type python_type: the python type for this field
+
+    :returns: the parts that make up the user input for the field
+    :rtype: tuple of Tkinter.Variable * Tkinter.Widget * Tkinter.Label
+    """
+    label = Tkinter.Label(master, text=label_text)
+    var = getVar(python_type)
+    var.set(getattr(config, config_attr))
+    widget = getWidget(master, var, python_type)
+    return (var, widget, label)
 
 
 class ValueConfig(object):
 
     CONFIG = justbytes.RangeConfig.VALUE_CONFIG
 
+    _FIELD_MAP = {
+       "base": ("Base:", int),
+       "binary_units": ("Use IEC units?", bool),
+       "exact_value": ("Get exact value?", bool)
+    }
+
+    def __init__(self):
+        self._field_vars = dict()
+
     def create(self, master):
         self.VALUE = Tkinter.LabelFrame(master, text="Value")
         self.VALUE.pack({"side": "left"})
 
-        self.BASE_LABEL = Tkinter.Label(self.VALUE, text="Base:")
-        self.BASE_VAR = Tkinter.StringVar()
-        self.BASE_VAR.set(self.CONFIG.base)
-        self.BASE_ENTRY = Tkinter.Entry(self.VALUE, textvariable=self.BASE_VAR)
-        self.BASE_LABEL.grid(row=0, column=0)
-        self.BASE_ENTRY.grid(row=0, column=1)
-
-        self.BINARY_UNITS_LABEL = \
-           Tkinter.Label(self.VALUE, text="Use IEC units?")
-        self.BINARY_UNITS_VAR = Tkinter.BooleanVar()
-        self.BINARY_UNITS_VAR.set(self.CONFIG.binary_units)
-        self.BINARY_UNITS_CHECKBUTTON = \
-           Tkinter.Checkbutton(self.VALUE, variable=self.BINARY_UNITS_VAR)
-        self.BINARY_UNITS_LABEL.grid(row=1, column=0)
-        self.BINARY_UNITS_CHECKBUTTON.grid(row=1, column=1)
+        for (index, config_attr) in enumerate(sorted(self._FIELD_MAP.keys())):
+            (label_text, python_type) = self._FIELD_MAP[config_attr]
+            (var, widget, label) = getField(
+               self.VALUE,
+               self.CONFIG,
+               config_attr,
+               label_text,
+               python_type
+            )
+            label.grid(row=index, column=0)
+            widget.grid(row=index, column=1)
+            self._field_vars[config_attr] = var
 
     def get(self):
         kwargs = dict()
 
-        try:
-            kwargs['base'] = int(self.BASE_VAR.get())
-        except ValueError:
-            raise GUIValueError("base value must be an integer greater than 1")
-
-        kwargs['binary_units'] = self.BINARY_UNITS_VAR.get()
+        for config_attr in sorted(self._FIELD_MAP.keys()):
+            try:
+                (_, python_type) = self._FIELD_MAP[config_attr]
+                kwargs[config_attr] = \
+                   python_type(self._field_vars[config_attr].get())
+            except ValueError:
+                args = (config_attr, python_type)
+                raise GUIValueError("%s value must be convertible to %s" % args)
 
         return kwargs
 
