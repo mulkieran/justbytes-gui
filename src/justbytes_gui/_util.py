@@ -33,8 +33,6 @@ def getVar(python_type):
     """
     if python_type == bool:
         return Tkinter.BooleanVar()
-    if python_type == float:
-        return Tkinter.DoubleVar()
     if python_type == int:
         return Tkinter.IntVar()
     if python_type == str:
@@ -58,7 +56,7 @@ def getWidget(master, widget_selector, config, config_attr):
        var.set(getattr(config, config_attr))
        if python_type == bool:
            return (var, Tkinter.Checkbutton(master, variable=var))
-       if python_type in (int, float, str):
+       if python_type in (int, str):
            return (var, Tkinter.Entry(master, textvariable=var))
 
    raise GUIValueError("Unexpected python_type %s" % python_type)

@@ -49,7 +49,7 @@ class JustEntry(object):
             button.pack()
             return
 
-        if python_type in (int, float, str):
+        if python_type in (int, str):
             entry = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
             entry.pack()
             return
