@@ -57,3 +57,19 @@ class MaybeSelector(WidgetSelector):
         :param type python_type: the python type being handled
         """
         self.python_type = python_type
+
+
+class ChoiceSelector(WidgetSelector):
+    """
+    Widget for a list of choices.
+    """
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, choices):
+        """
+        Initializer.
+
+        :param choices: the choices available
+        :type choices: list of object * str
+        """
+        self.choices = choices

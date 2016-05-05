@@ -22,13 +22,13 @@ import justbytes
 
 from ._errors import GUIValueError
 
+from ._gadgets import ChoiceEntry
 from ._gadgets import JustEntry
 from ._gadgets import MaybeEntry
 
+from ._selectors import ChoiceSelector
 from ._selectors import JustSelector
 from ._selectors import MaybeSelector
-
-from ._util import getVar
 
 
 class ValueConfig(object):
@@ -39,7 +39,20 @@ class ValueConfig(object):
        "base": ("Base:", JustSelector(int)),
        "binary_units": ("Use IEC units?", JustSelector(bool)),
        "exact_value": ("Get exact value?", JustSelector(bool)),
-       "max_places": ("Maximum number of digits right of radix:", MaybeSelector(int))
+       "max_places":
+          ("Maximum number of digits right of radix:", MaybeSelector(int)),
+       "rounding_method":
+          (
+             "Rounding method:",
+             ChoiceSelector([
+                (justbytes.ROUND_DOWN, "down"),
+                (justbytes.ROUND_HALF_DOWN, "half down"),
+                (justbytes.ROUND_HALF_UP, "half up"),
+                (justbytes.ROUND_HALF_ZERO, "half 0"),
+                (justbytes.ROUND_TO_ZERO, "to 0"),
+                (justbytes.ROUND_UP, "up")
+             ])
+          )
     }
 
     def __init__(self, master):
@@ -63,6 +76,13 @@ class ValueConfig(object):
                    getattr(self.CONFIG, config_attr),
                    label_text,
                    widget_selector.python_type
+                )
+            elif isinstance(widget_selector, ChoiceSelector):
+                entry = ChoiceEntry(
+                   self.VALUE,
+                   getattr(self.CONFIG, config_attr),
+                   label_text,
+                   widget_selector.choices
                 )
             entry.widget.pack({"side": "top"})
             self._field_vars[config_attr] = entry

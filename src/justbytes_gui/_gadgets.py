@@ -114,3 +114,53 @@ class MaybeEntry(object):
         :raises ValueError:
         """
         return None if self.NONE_VAR.get() else self.VAR.get()
+
+
+class ChoiceEntry(object):
+    """
+    Entry for ChoiceSelector.
+    """
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, master, value, label_text, choices):
+        """
+        Initializer.
+
+        :param Tkinter.Widget master: the master of the top frame
+        :param object value: the value of the configuration field
+        :param str label_text: the label for the field
+        :param choices: the list of choices available, with names
+        :type choices: list of object * str
+
+        :raises GUIValueError:
+        """
+        self.FRAME = Tkinter.LabelFrame(master, text=label_text)
+        self.VAR = getVar(int)
+        self._CHOICES = dict()
+        self._INDICES = []
+
+        for (index, (choice, choice_name)) in enumerate(choices):
+            b = Tkinter.Radiobutton(
+               self.FRAME,
+               text=choice_name,
+               variable=self.VAR,
+               value=index
+            )
+            b.pack(anchor=Tkinter.W)
+            self._CHOICES[choice] = index
+            self._INDICES.append(choice)
+
+        self.VAR.set(self._CHOICES[value])
+
+    widget = property(lambda s: s.FRAME, doc="top-level widget")
+
+    def get(self):
+        """
+        Get the value.
+
+        :returns: the current value for the widget, converted to the type
+        :rtype: object
+
+        :raises ValueError:
+        """
+        return self._INDICES[self.VAR.get()]
