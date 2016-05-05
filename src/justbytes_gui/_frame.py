@@ -22,55 +22,11 @@ import justbytes
 
 from ._errors import GUIValueError
 
+from ._gadgets import JustEntry
+
 from ._selectors import JustSelector
 
 from ._util import getVar
-
-
-class JustEntry(object):
-    """
-    Entry for JustSelector.
-    """
-
-    def __init__(self, master, value, label_text, python_type):
-        """
-        Initializer.
-
-        :param Tkinter.Widget master: the master of the top frame
-        :param object value: the value of the configuration field
-        :param str label_text: the label for the field
-        :param type python_type: the simple type of the field
-
-        :raises GUIValueError:
-        """
-        self.FRAME = Tkinter.LabelFrame(master, text=label_text)
-        self.VAR = getVar(python_type)
-        self.VAR.set(value)
-
-        if python_type == bool:
-            field = Tkinter.Checkbutton(self.FRAME, variable=self.VAR)
-            field.pack()
-            return
-
-        if python_type in (int, float, str):
-            field = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
-            field.pack()
-            return
-
-        raise GUIValueError("Unexpected python_type %s" % python_type)
-
-    widget = property(lambda s: s.FRAME, doc="top-level widget")
-
-    def get(self):
-        """
-        Get the value.
-
-        :returns: the current value for the widget, converted to the type
-        :rtype: object
-
-        :raises ValueError:
-        """
-        return self.VAR.get()
 
 
 class ValueConfig(object):
