@@ -27,6 +27,7 @@ class JustEntry(object):
     """
     Entry for JustSelector.
     """
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, master, value, label_text, python_type):
         """
@@ -44,13 +45,13 @@ class JustEntry(object):
         self.VAR.set(value)
 
         if python_type == bool:
-            field = Tkinter.Checkbutton(self.FRAME, variable=self.VAR)
-            field.pack()
+            button = Tkinter.Checkbutton(self.FRAME, variable=self.VAR)
+            button.pack()
             return
 
         if python_type in (int, float, str):
-            field = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
-            field.pack()
+            entry = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
+            entry.pack()
             return
 
         raise GUIValueError("Unexpected python_type %s" % python_type)

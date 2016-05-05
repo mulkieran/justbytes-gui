@@ -26,12 +26,14 @@ class WidgetSelector(object):
     """
     An object, containing the information to select a widget.
     """
+    # pylint: disable=too-few-public-methods
     pass
 
 class JustSelector(WidgetSelector):
     """
     Widget only has to represent a single type.
     """
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, python_type):
         """
