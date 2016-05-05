@@ -16,7 +16,10 @@
 """
 Highest level code for module.
 """
+import abc
 import Tkinter
+
+from six import add_metaclass
 
 import justbytes
 
@@ -31,37 +34,42 @@ from ._selectors import JustSelector
 from ._selectors import MaybeSelector
 
 
-class ValueConfig(object):
+@add_metaclass(abc.ABCMeta)
+class Config(object):
+    """
+    Top level class for configuration gadgets.
+    """
+    # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.VALUE_CONFIG
+    CONFIG = abc.abstractproperty(doc="associated configuration")
+    _FIELD_MAP = abc.abstractproperty(doc="map from field names to gadgets")
 
-    _FIELD_MAP = {
-       "base": ("Base:", JustSelector(int)),
-       "binary_units": ("Use IEC units?", JustSelector(bool)),
-       "exact_value": ("Get exact value?", JustSelector(bool)),
-       "max_places":
-          ("Maximum number of digits right of radix:", MaybeSelector(int)),
-       "rounding_method":
-          (
-             "Rounding method:",
-             ChoiceSelector([
-                (justbytes.ROUND_DOWN, "down"),
-                (justbytes.ROUND_HALF_DOWN, "half down"),
-                (justbytes.ROUND_HALF_UP, "half up"),
-                (justbytes.ROUND_HALF_ZERO, "half 0"),
-                (justbytes.ROUND_TO_ZERO, "to 0"),
-                (justbytes.ROUND_UP, "up")
-             ])
-          )
-    }
+    def get(self):
+        """
+        Get a dictionary of values associated with this gadget.
 
-    def __init__(self, master):
+        :returns: a dictionary of value
+        :rtype: dict of str * object
+        """
+        kwargs = dict()
+
+        for config_attr in sorted(self._FIELD_MAP.keys()):
+            try:
+                kwargs[config_attr] = self._field_vars[config_attr].get()
+            except ValueError:
+                raise GUIValueError(
+                   "value for %s could not be converted" % config_attr
+                )
+
+        return kwargs
+
+    def __init__(self, master, label_str):
         self._field_vars = dict()
 
-        self.VALUE = Tkinter.LabelFrame(master, text="Value")
+        self.VALUE = Tkinter.LabelFrame(master, text=label_str)
         self.VALUE.pack({"side": "left"})
 
-        for (index, config_attr) in enumerate(sorted(self._FIELD_MAP.keys())):
+        for config_attr in sorted(self._FIELD_MAP.keys()):
             (label_text, widget_selector) = self._FIELD_MAP[config_attr]
             if isinstance(widget_selector, JustSelector):
                 entry = JustEntry(
@@ -87,18 +95,82 @@ class ValueConfig(object):
             entry.widget.pack({"side": "top"})
             self._field_vars[config_attr] = entry
 
-    def get(self):
-        kwargs = dict()
+class StripConfig(Config):
+    """
+    Configuration gadget for stripping options.
+    """
+    # pylint: disable=too-few-public-methods
 
-        for config_attr in sorted(self._FIELD_MAP.keys()):
-            try:
-                kwargs[config_attr] = self._field_vars[config_attr].get()
-            except ValueError:
-                raise GUIValueError(
-                   "value for %s could not be converted" % config_attr
-                )
+    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.strip_config
 
-        return kwargs
+    _FIELD_MAP = {
+       "strip": ("Strip all trailing zeros?", JustSelector(bool)),
+       "strip_exact": ("Strip trailing zeros if exact?", JustSelector(bool)),
+       "strip_whole":
+          (
+             "Strip trailing zeros if exact whole number?",
+             JustSelector(bool)
+          )
+    }
+
+
+class DigitsConfig(Config):
+    """
+    Configuration for property of digits.
+    """
+    # pylint: disable=too-few-public-methods
+
+    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.digits_config
+
+    _FIELD_MAP = {
+       "separator": ("Separator:", JustSelector(str)),
+       "use_caps": ("Use capital letters?", JustSelector(bool)),
+       "use_letters": ("Use letters for digits?", JustSelector(bool))
+    }
+
+
+class MiscDisplayConfig(Config):
+    """
+    Miscellaneous display options.
+    """
+    # pylint: disable=too-few-public-methods
+
+    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG
+
+    _FIELD_MAP = {
+       "show_approx_str":
+          ("Indicate if value is approximate?", JustSelector(bool)),
+       "show_base": ("Prefix with indicator for base?", JustSelector(bool))
+    }
+
+
+class ValueConfig(Config):
+    """
+    Configuration for choosing the value to display.
+    """
+    # pylint: disable=too-few-public-methods
+
+    CONFIG = justbytes.RangeConfig.VALUE_CONFIG
+
+    _FIELD_MAP = {
+       "base": ("Base:", JustSelector(int)),
+       "binary_units": ("Use IEC units?", JustSelector(bool)),
+       "exact_value": ("Get exact value?", JustSelector(bool)),
+       "max_places":
+          ("Maximum number of digits right of radix:", MaybeSelector(int)),
+       "rounding_method":
+          (
+             "Rounding method:",
+             ChoiceSelector([
+                (justbytes.ROUND_DOWN, "down"),
+                (justbytes.ROUND_HALF_DOWN, "half down"),
+                (justbytes.ROUND_HALF_UP, "half up"),
+                (justbytes.ROUND_HALF_ZERO, "half 0"),
+                (justbytes.ROUND_TO_ZERO, "to 0"),
+                (justbytes.ROUND_UP, "up")
+             ])
+          )
+    }
 
 
 class RangeFrame(Tkinter.Frame):
@@ -109,45 +181,6 @@ class RangeFrame(Tkinter.Frame):
         Tkinter.Frame.__init__(self, master)
         self.value = None
         self.pack()
-
-    def createStripOptions(self, master):
-        config = justbytes.RangeConfig.DISPLAY_CONFIG.strip_config
-
-        self.STRIP = Tkinter.LabelFrame(master, text="Strip")
-        self.STRIP.pack({"side": "left"})
-
-        self.STRIP_LABEL = Tkinter.Label(self.STRIP, text="Strip trailing zeros?")
-        self.STRIP_CHECKBUTTON = Tkinter.Checkbutton(self.STRIP)
-        if config.strip:
-            self.STRIP__CHECKBUTTON.select()
-        else:
-            self.STRIP_CHECKBUTTON.deselect()
-        self.STRIP_LABEL.grid(row=0, column=0)
-        self.STRIP_CHECKBUTTON.grid(row=0, column=1)
-
-    def createDigitsOptions(self, master):
-        config = justbytes.RangeConfig.DISPLAY_CONFIG.digits_config
-
-        self.DIGITS = Tkinter.LabelFrame(master, text="Digits")
-        self.DIGITS.pack({"side": "left"})
-
-        self.USE_CAPS_LABEL = Tkinter.Label(self.DIGITS, text="Use caps?")
-        self.USE_CAPS_CHECKBUTTON = Tkinter.Checkbutton(self.DIGITS)
-        if config.use_caps:
-            self.USE_CAPS_CHECKBUTTON.select()
-        else:
-            self.USE_CAPS_CHECKBUTTON.deselect()
-        self.USE_CAPS_LABEL.grid(row=0, column=0)
-        self.USE_CAPS_CHECKBUTTON.grid(row=0, column=1)
-
-        self.USE_LETTERS_LABEL = Tkinter.Label(self.DIGITS, text="Use letters?")
-        self.USE_LETTERS_CHECKBUTTON = Tkinter.Checkbutton(self.DIGITS)
-        if config.use_letters:
-            self.USE_LETTERS_CHECKBUTTON.select()
-        else:
-            self.USE_LETTERS_CHECKBUTTON.deselect()
-        self.USE_LETTERS_LABEL.grid(row=1, column=0)
-        self.USE_LETTERS_CHECKBUTTON.grid(row=1, column=1)
 
     def show(self):
         try:
@@ -161,33 +194,36 @@ class RangeFrame(Tkinter.Frame):
         self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
     def createWidgets(self):
-        self.SHOW = Tkinter.Button(self, text="Show", command=self.show)
-        self.SHOW.pack({"side": "bottom"})
+        show = Tkinter.Button(self, text="Show", command=self.show)
+        show.pack({"side": "bottom"})
 
-        self.QUIT = Tkinter.Button(self, text="Quit", command=self.quit)
-        self.QUIT.pack({"side": "bottom"})
+        quit = Tkinter.Button(self, text="Quit", command=self.quit)
+        quit.pack({"side": "bottom"})
 
         self.DISPLAY_STR = Tkinter.StringVar()
         self.DISPLAY_STR.set(str(self.value))
-        self.DISPLAY = Tkinter.Label(
+        display = Tkinter.Label(
            self,
            textvariable=self.DISPLAY_STR,
            font=("Helvetica", 32)
         )
-        self.DISPLAY.pack({"side": "top"})
+        display.pack({"side": "top"})
 
         self.ERROR_STR = Tkinter.StringVar()
         self.ERROR_STR.set("")
-        self.ERROR = Tkinter.Label(self, textvariable=self.ERROR_STR, fg="red")
-        self.ERROR.pack({"side": "top"})
+        error = Tkinter.Label(self, textvariable=self.ERROR_STR, fg="red")
+        error.pack({"side": "top"})
 
-        self.VALUE = ValueConfig(self)
+        self.VALUE = ValueConfig(self, "Value")
 
         self.DISPLAY = Tkinter.LabelFrame(self, text="Display")
         self.DISPLAY.pack({"side": "left"})
 
-        self.createDigitsOptions(self.DISPLAY)
-        self.createStripOptions(self.DISPLAY)
+        self.DIGITS = DigitsConfig(self.DISPLAY, "Digits Options")
+
+        self.STRIP = StripConfig(self.DISPLAY, "Strip Options")
+        self.MISC = \
+           MiscDisplayConfig(self.DISPLAY, "Miscellaneous Display Options")
 
 
 def show(a_range):
