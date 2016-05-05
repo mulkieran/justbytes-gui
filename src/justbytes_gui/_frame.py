@@ -17,6 +17,7 @@
 Highest level code for module.
 """
 import abc
+import decimal
 import Tkinter
 
 from six import add_metaclass
@@ -56,7 +57,7 @@ class Config(object):
         for config_attr in sorted(self._FIELD_MAP.keys()):
             try:
                 kwargs[config_attr] = self._field_vars[config_attr].get()
-            except ValueError:
+            except (ValueError, decimal.InvalidOperation):
                 raise GUIValueError(
                    "value for %s could not be converted" % config_attr
                 )
@@ -160,6 +161,11 @@ class ValueConfig(Config):
        "exact_value": ("Get exact value?", JustSelector(bool)),
        "max_places":
           ("Maximum number of digits right of radix:", MaybeSelector(int)),
+       "min_value":
+          (
+             "Bounding factor for non-fractional part:",
+              JustSelector(decimal.Decimal)
+          ),
        "rounding_method":
           (
              "Rounding method:",

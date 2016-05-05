@@ -19,6 +19,7 @@ Hierarchy of gadgets.
 import abc
 import Tkinter
 
+from decimal import Decimal
 from six import add_metaclass
 
 from ._errors import GUIValueError
@@ -67,13 +68,14 @@ class JustEntry(Entry):
         self.FRAME = Tkinter.LabelFrame(master, text=label_text)
         self.VAR = getVar(python_type)
         self.VAR.set(value)
+        self.PYTHON_TYPE = python_type
 
         if python_type == bool:
             button = Tkinter.Checkbutton(self.FRAME, variable=self.VAR)
             button.pack()
             return
 
-        if python_type in (int, str):
+        if python_type in (int, str, Decimal):
             entry = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
             entry.pack()
             return
@@ -83,7 +85,7 @@ class JustEntry(Entry):
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        return self.VAR.get()
+        return self.PYTHON_TYPE(self.VAR.get())
 
 
 class MaybeEntry(Entry):

@@ -18,6 +18,8 @@ Highest level code for module.
 """
 import Tkinter
 
+from decimal import Decimal
+
 from ._errors import GUIValueError
 
 
@@ -33,6 +35,6 @@ def getVar(python_type):
         return Tkinter.BooleanVar()
     if python_type == int:
         return Tkinter.IntVar()
-    if python_type == str:
+    if python_type in (str, Decimal):
         return Tkinter.StringVar()
     raise GUIValueError("Unexpected python_type %s" % python_type)
