@@ -120,6 +120,21 @@ def getField(master, config, config_attr, label_text, widget_selector):
     return (var, widget, label)
 
 
+def convertValue(value, widget_selector):
+    """
+    Convert a value according to its widget selector.
+
+    :param object value: value to convert
+    :param WidgetSelector widget_selector: the widget selector
+    :returns: converted value
+    :rtype: object
+    """
+    if isinstance(widget_selector, JustSelector):
+        return value
+
+    raise GUIValueError("Unexpected WidgetSelector %s" % widget_selector)
+
+
 class ValueConfig(object):
 
     CONFIG = justbytes.RangeConfig.VALUE_CONFIG
@@ -155,18 +170,13 @@ class ValueConfig(object):
 
         for config_attr in sorted(self._FIELD_MAP.keys()):
             (_, widget_selector) = self._FIELD_MAP[config_attr]
-            value = self._field_vars[config_attr].get()
-            if isinstance(widget_selector, JustSelector):
-                python_type = widget_selector.python_type
-                try:
-                    kwargs[config_attr] = python_type(value)
-                except ValueError:
-                    args = (config_attr, python_type)
-                    raise GUIValueError(
-                       "%s value must be convertible to %s" % args
-                    )
-            else:
-                kwargs[config_attr] = value
+            try:
+                value = self._field_vars[config_attr].get()
+                kwargs[config_attr] = convertValue(value, widget_selector)
+            except ValueError:
+                raise GUIValueError(
+                   "value for %s could not be converted" % config_attr
+                )
 
         return kwargs
 
