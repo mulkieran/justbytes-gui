@@ -216,14 +216,12 @@ class RangeFrame(Tkinter.Frame):
 
         self.VALUE = ValueConfig(self, "Value")
 
-        self.DISPLAY = Tkinter.LabelFrame(self, text="Display")
-        self.DISPLAY.pack({"side": "left"})
+        display = Tkinter.LabelFrame(self, text="Display")
+        display.pack({"side": "left"})
 
-        self.DIGITS = DigitsConfig(self.DISPLAY, "Digits Options")
-
-        self.STRIP = StripConfig(self.DISPLAY, "Strip Options")
-        self.MISC = \
-           MiscDisplayConfig(self.DISPLAY, "Miscellaneous Display Options")
+        self.DIGITS = DigitsConfig(display, "Digits Options")
+        self.STRIP = StripConfig(display, "Strip Options")
+        self.MISC = MiscDisplayConfig(display, "Miscellaneous Display Options")
 
 
 def show(a_range):
