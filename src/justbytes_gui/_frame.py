@@ -20,12 +20,57 @@ import Tkinter
 
 import justbytes
 
-from ._errors import GUIValueError 
+from ._errors import GUIValueError
 
 from ._selectors import JustSelector
 
-from ._util import convertValue
-from ._util import getField
+from ._util import getVar
+
+
+class JustEntry(object):
+    """
+    Entry for JustSelector.
+    """
+
+    def __init__(self, master, value, label_text, python_type):
+        """
+        Initializer.
+
+        :param Tkinter.Widget master: the master of the top frame
+        :param object value: the value of the configuration field
+        :param str label_text: the label for the field
+        :param type python_type: the simple type of the field
+
+        :raises GUIValueError:
+        """
+        self.FRAME = Tkinter.LabelFrame(master, text=label_text)
+        self.VAR = getVar(python_type)
+        self.VAR.set(value)
+
+        if python_type == bool:
+            field = Tkinter.Checkbutton(self.FRAME, variable=self.VAR)
+            field.pack()
+            return
+
+        if python_type in (int, float, str):
+            field = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
+            field.pack()
+            return
+
+        raise GUIValueError("Unexpected python_type %s" % python_type)
+
+    widget = property(lambda s: s.FRAME, doc="top-level widget")
+
+    def get(self):
+        """
+        Get the value.
+
+        :returns: the current value for the widget, converted to the type
+        :rtype: object
+
+        :raises ValueError:
+        """
+        return self.VAR.get()
 
 
 class ValueConfig(object):
@@ -38,34 +83,30 @@ class ValueConfig(object):
        "exact_value": ("Get exact value?", JustSelector(bool))
     }
 
-    def __init__(self):
+    def __init__(self, master):
         self._field_vars = dict()
 
-    def create(self, master):
         self.VALUE = Tkinter.LabelFrame(master, text="Value")
         self.VALUE.pack({"side": "left"})
 
         for (index, config_attr) in enumerate(sorted(self._FIELD_MAP.keys())):
             (label_text, widget_selector) = self._FIELD_MAP[config_attr]
-            (var, widget, label) = getField(
-               self.VALUE,
-               self.CONFIG,
-               config_attr,
-               label_text,
-               widget_selector
-            )
-            label.grid(row=index, column=0)
-            widget.grid(row=index, column=1)
-            self._field_vars[config_attr] = var
+            if isinstance(widget_selector, JustSelector):
+                entry = JustEntry(
+                   self.VALUE,
+                   getattr(self.CONFIG, config_attr),
+                   label_text,
+                   widget_selector.python_type
+                )
+                entry.widget.pack({"side": "top"})
+            self._field_vars[config_attr] = entry
 
     def get(self):
         kwargs = dict()
 
         for config_attr in sorted(self._FIELD_MAP.keys()):
-            (_, widget_selector) = self._FIELD_MAP[config_attr]
             try:
-                value = self._field_vars[config_attr].get()
-                kwargs[config_attr] = convertValue(value, widget_selector)
+                kwargs[config_attr] = self._field_vars[config_attr].get()
             except ValueError:
                 raise GUIValueError(
                    "value for %s could not be converted" % config_attr
@@ -154,8 +195,7 @@ class RangeFrame(Tkinter.Frame):
         self.ERROR = Tkinter.Label(self, textvariable=self.ERROR_STR, fg="red")
         self.ERROR.pack({"side": "top"})
 
-        self.VALUE = ValueConfig()
-        self.VALUE.create(self)
+        self.VALUE = ValueConfig(self)
 
         self.DISPLAY = Tkinter.LabelFrame(self, text="Display")
         self.DISPLAY.pack({"side": "left"})
