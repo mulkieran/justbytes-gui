@@ -160,10 +160,16 @@ class ChoiceEntry(Entry):
             self._CHOICES[choice] = index
             self._INDICES.append(choice)
 
-        if value is not None:
+        if value is None:
+            self.VAR.set(-1)
+        else:
             self.VAR.set(self._CHOICES[value])
 
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        return self._INDICES[self.VAR.get()]
+        index = self.VAR.get()
+        if index == -1:
+            return None
+        else:
+            return self._INDICES[index]
