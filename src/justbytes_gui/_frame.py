@@ -242,6 +242,7 @@ def show(a_range):
     :param Range a_range: the range to display
     """
     root = Tkinter.Tk()
+    root.wm_title("Justbytes Range Viewer")
     frame = RangeFrame(master=root)
     frame.value = a_range
     frame.show()
