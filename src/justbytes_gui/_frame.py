@@ -27,6 +27,7 @@ import justbytes
 from ._errors import GUIValueError
 
 from ._gadgets import ChoiceEntry
+from ._gadgets import Entry
 from ._gadgets import JustEntry
 from ._gadgets import MaybeEntry
 
@@ -72,29 +73,12 @@ class Config(object):
 
         for config_attr in sorted(self._FIELD_MAP.keys()):
             (label_text, widget_selector) = self._FIELD_MAP[config_attr]
-            if isinstance(widget_selector, JustSelector):
-                entry = JustEntry(
-                   self.VALUE,
-                   getattr(self.CONFIG, config_attr),
-                   label_text,
-                   widget_selector.python_type
-                )
-            elif isinstance(widget_selector, MaybeSelector):
-                # pylint: disable=redefined-variable-type
-                entry = MaybeEntry(
-                   self.VALUE,
-                   getattr(self.CONFIG, config_attr),
-                   label_text,
-                   widget_selector.python_type
-                )
-            elif isinstance(widget_selector, ChoiceSelector):
-                # pylint: disable=redefined-variable-type
-                entry = ChoiceEntry(
-                   self.VALUE,
-                   getattr(self.CONFIG, config_attr),
-                   label_text,
-                   widget_selector.choices
-                )
+            entry = Entry.getWidget(
+               self.VALUE,
+               widget_selector,
+               getattr(self.CONFIG, config_attr),
+               label_text
+            )
             entry.widget.pack({"side": "top"})
             self._field_vars[config_attr] = entry
 

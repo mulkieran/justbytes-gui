@@ -24,6 +24,10 @@ from six import add_metaclass
 
 from ._errors import GUIValueError
 
+from ._selectors import ChoiceSelector
+from ._selectors import JustSelector
+from ._selectors import MaybeSelector
+
 from ._util import getVar
 
 
@@ -33,6 +37,16 @@ class Entry(object):
     Top level class for gadgets.
     """
     # pylint: disable=too-few-public-methods
+
+    @classmethod
+    def getWidget(cls, master, selector, value, label_text):
+        if isinstance(selector, JustSelector):
+            return JustEntry(master, value, label_text, selector.python_type)
+        elif isinstance(selector, MaybeSelector):
+            return MaybeEntry(master, value, label_text, selector.python_type)
+        elif isinstance(selector, ChoiceSelector):
+            return ChoiceEntry(master, value, label_text, selector.choices)
+        raise GUIValueError("Unexpeced selector %s" % selector)
 
     @abc.abstractmethod
     def get(self):
