@@ -108,14 +108,14 @@ class MaybeEntry(Entry):
     """
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, master, value, label_text, python_type):
+    def __init__(self, master, value, label_text, selector):
         """
         Initializer.
 
         :param Tkinter.Widget master: the master of the top frame
         :param object value: the value of the configuration field
         :param str label_text: the label for the field
-        :param type python_type: the simple type of the field
+        :param WidgetSelector selector: selector for the non-None part
 
         :raises GUIValueError:
         """
@@ -129,15 +129,13 @@ class MaybeEntry(Entry):
 
         Tkinter.Label(self.FRAME, text="OR").pack({"side": "left"})
 
-        self.VAR = getVar(python_type)
-        self.VAR.set(value)
-        entry = Tkinter.Entry(self.FRAME, textvariable=self.VAR)
-        entry.pack({"side": "left"})
+        self.ENTRY = self.getWidget(self.FRAME, selector, value, "")
+        self.ENTRY.widget.pack({"side": "left"})
 
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        return None if self.NONE_VAR.get() else self.VAR.get()
+        return None if self.NONE_VAR.get() else self.ENTRY.get()
 
 
 class ChoiceEntry(Entry):

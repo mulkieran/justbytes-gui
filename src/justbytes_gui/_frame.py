@@ -144,7 +144,10 @@ class ValueConfig(Config):
        "binary_units": ("Use IEC units?", JustSelector(bool)),
        "exact_value": ("Get exact value?", JustSelector(bool)),
        "max_places":
-          ("Maximum number of digits right of radix:", MaybeSelector(int)),
+          (
+             "Maximum number of digits right of radix:",
+             MaybeSelector(JustSelector(int))
+          ),
        "min_value":
           (
              "Bounding factor for non-fractional part:",
