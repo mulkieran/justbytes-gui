@@ -164,6 +164,15 @@ class ValueConfig(Config):
                 (justbytes.ROUND_TO_ZERO, "to 0"),
                 (justbytes.ROUND_UP, "up")
              ])
+          ),
+       "unit":
+          (
+             "Unit:",
+             MaybeSelector(
+                ChoiceSelector(
+                   [(u, str(u)) for u in justbytes._BinaryUnits.UNITS()]
+                )
+             )
           )
     }
 
