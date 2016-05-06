@@ -160,7 +160,8 @@ class ChoiceEntry(Entry):
             self._CHOICES[choice] = index
             self._INDICES.append(choice)
 
-        self.VAR.set(self._CHOICES[value])
+        if value is not None:
+            self.VAR.set(self._CHOICES[value])
 
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
