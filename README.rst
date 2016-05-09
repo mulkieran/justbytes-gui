@@ -1,6 +1,3 @@
-.. image:: https://secure.travis-ci.org/mulkieran/justbytes-gui.png?branch=master
-   :target: http://travis-ci.org/mulkieran/justbytes-gui
-
 Justbytes-GUI
 =============
 
