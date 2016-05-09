@@ -40,6 +40,17 @@ class Entry(object):
 
     @classmethod
     def getWidget(cls, master, selector, value, label_text):
+        """
+        Recursive dispatch for appropriate widget.
+
+        :param Widget master: the widget to which new widget belongs
+        :param WidgetSelector selector: the selector info
+        :param object value: the value the selected widget represents
+        :param str label_text: how to label the value
+
+        :returns: a gadget for the value
+        :rtype: Entry
+        """
         if isinstance(selector, JustSelector):
             return JustEntry(master, value, label_text, selector.python_type)
         elif isinstance(selector, MaybeSelector):

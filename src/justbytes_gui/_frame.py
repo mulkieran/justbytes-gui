@@ -26,10 +26,7 @@ import justbytes
 
 from ._errors import GUIValueError
 
-from ._gadgets import ChoiceEntry
 from ._gadgets import Entry
-from ._gadgets import JustEntry
-from ._gadgets import MaybeEntry
 
 from ._selectors import ChoiceSelector
 from ._selectors import JustSelector
@@ -195,6 +192,8 @@ class RangeFrame(Tkinter.Frame):
     """
     Simple class to display a single Range value.
     """
+    # pylint: disable=too-many-instance-attributes
+
     def __init__(self, master=None):
         Tkinter.Frame.__init__(self, master)
         self.value = None
