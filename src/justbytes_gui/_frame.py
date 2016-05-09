@@ -57,7 +57,7 @@ class Config(object):
                 kwargs[config_attr] = self._field_vars[config_attr].get()
             except (ValueError, decimal.InvalidOperation):
                 raise GUIValueError(
-                   "value for %s could not be converted" % config_attr
+                   "value for \"%s\" could not be converted" % config_attr
                 )
 
         return kwargs
