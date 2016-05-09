@@ -82,6 +82,21 @@ class Config(object):
             entry.widget.pack({"side": "top"})
             self._field_vars[config_attr] = entry
 
+
+class BaseConfig(Config):
+    """
+    Configuration gadget for base display.
+    """
+    # pylint: disable=too-few-public-methods
+
+    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.base_config
+
+    _FIELD_MAP = {
+       "use_prefix": ("Display base prefix?", JustSelector(bool)),
+       "use_subscript": ("Display base subscript?", JustSelector(bool))
+    }
+
+
 class StripConfig(Config):
     """
     Configuration gadget for stripping options.
@@ -126,8 +141,7 @@ class MiscDisplayConfig(Config):
 
     _FIELD_MAP = {
        "show_approx_str":
-          ("Indicate if value is approximate?", JustSelector(bool)),
-       "show_base": ("Prefix with indicator for base?", JustSelector(bool))
+          ("Indicate if value is approximate?", JustSelector(bool))
     }
 
 
@@ -210,6 +224,7 @@ class RangeFrame(Tkinter.Frame):
         display = Tkinter.LabelFrame(self, text="Display")
         display.pack({"side": "left"})
 
+        self.BASE = BaseConfig(display, "Base Options")
         self.DIGITS = DigitsConfig(display, "Digits Options")
         self.STRIP = StripConfig(display, "Strip Options")
         self.MISC = MiscDisplayConfig(display, "Miscellaneous Display Options")
@@ -219,12 +234,14 @@ class RangeFrame(Tkinter.Frame):
         Show the resulting string.
         """
         try:
+            base_config = justbytes.BaseConfig(**self.BASE.get())
             value_config = justbytes.ValueConfig(**self.VALUE.get())
             digits_config = justbytes.DigitsConfig(**self.DIGITS.get())
             strip_config = justbytes.StripConfig(**self.STRIP.get())
             display_config = justbytes.DisplayConfig(
-               strip_config=strip_config,
+               base_config=base_config,
                digits_config=digits_config,
+               strip_config=strip_config,
                **self.MISC.get()
             )
         except (GUIValueError, justbytes.RangeError) as err:
