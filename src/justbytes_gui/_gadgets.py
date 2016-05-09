@@ -168,25 +168,28 @@ class ChoiceEntry(Entry):
         :raises GUIValueError:
         """
         self.FRAME = Tkinter.LabelFrame(master, text=label_text)
-        self.VAR = getVar(int)
-        self._CHOICES = dict()
-        self._INDICES = []
 
-        for (index, (choice, choice_name)) in enumerate(choices):
-            b = Tkinter.Radiobutton(
-               self.FRAME,
-               text=choice_name,
-               variable=self.VAR,
-               value=index
-            )
-            b.pack(anchor=Tkinter.W)
-            self._CHOICES[choice] = index
-            self._INDICES.append(choice)
+        if len(choices) < 9:
+            self._CHOICES = dict()
+            self._INDICES = []
+            self.VAR = getVar(int)
+            for (index, (choice, choice_name)) in enumerate(choices):
+                b = Tkinter.Radiobutton(
+                   self.FRAME,
+                   text=choice_name,
+                   variable=self.VAR,
+                   value=index
+                )
+                b.pack(anchor=Tkinter.W)
+                self._CHOICES[choice] = index
+                self._INDICES.append(choice)
 
-        if value is None:
-            self.VAR.set(-1)
+            if value is None:
+                self.VAR.set(-1)
+            else:
+                self.VAR.set(self._CHOICES[value])
         else:
-            self.VAR.set(self._CHOICES[value])
+            raise Exception("Help")
 
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
