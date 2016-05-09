@@ -169,9 +169,9 @@ class ChoiceEntry(Entry):
         """
         self.FRAME = Tkinter.LabelFrame(master, text=label_text)
 
+        self._CHOICES = dict()
+        self._INDICES = []
         if len(choices) < 9:
-            self._CHOICES = dict()
-            self._INDICES = []
             self.VAR = getVar(int)
             for (index, (choice, choice_name)) in enumerate(choices):
                 b = Tkinter.Radiobutton(
@@ -189,12 +189,25 @@ class ChoiceEntry(Entry):
             else:
                 self.VAR.set(self._CHOICES[value])
         else:
-            raise Exception("Help")
+            self.CHOICES = \
+               Tkinter.Listbox(self.FRAME, selectmode=Tkinter.SINGLE)
+            for (index, (choice, choice_name)) in enumerate(choices):
+                self.CHOICES.insert(index, choice_name)
+                self._CHOICES[choice] = index
+                self._INDICES.append(choice)
+            if value is None:
+                self.CHOICES.activate(-1)
+            else:
+                self.CHOICES.activate(self._CHOICES[value])
+            self.CHOICES.pack()
 
     widget = property(lambda s: s.FRAME, doc="top-level widget")
 
     def get(self):
-        index = self.VAR.get()
+        if hasattr(self, 'CHOICES'):
+            (index, ) = self.CHOICES.curselection()
+        else:
+            index = self.VAR.get()
         if index == -1:
             return None
         else:

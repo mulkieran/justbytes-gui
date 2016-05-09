@@ -181,7 +181,7 @@ class ValueConfig(Config):
              "Unit:",
              MaybeSelector(
                 ChoiceSelector(
-                   [(u, str(u)) for u in justbytes._BinaryUnits.UNITS()]
+                   [(u, str(u)) for u in justbytes.UNITS()]
                 )
              )
           )
