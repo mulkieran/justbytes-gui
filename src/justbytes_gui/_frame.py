@@ -62,11 +62,12 @@ class Config(object):
 
         return kwargs
 
+    widget = property(lambda s: s.VALUE, doc="top level widget")
+
     def __init__(self, master, label_str):
         self._field_vars = dict()
 
         self.VALUE = Tkinter.LabelFrame(master, text=label_str)
-        self.VALUE.pack({"side": "left"})
 
         for config_attr in sorted(self._FIELD_MAP.keys()):
             (label_text, widget_selector) = self._FIELD_MAP[config_attr]
@@ -219,14 +220,19 @@ class RangeFrame(Tkinter.Frame):
         error.pack({"side": "top"})
 
         self.VALUE = ValueConfig(self, "Value")
+        self.VALUE.widget.pack({"side": "left"})
 
         display = Tkinter.LabelFrame(self, text="Display")
         display.pack({"side": "left"})
 
         self.BASE = BaseConfig(display, "Base Options")
+        self.BASE.widget.pack({"side": "top"})
         self.DIGITS = DigitsConfig(display, "Digits Options")
+        self.DIGITS.widget.pack({"side": "top"})
         self.STRIP = StripConfig(display, "Strip Options")
+        self.STRIP.widget.pack({"side": "top"})
         self.MISC = MiscDisplayConfig(display, "Miscellaneous Display Options")
+        self.MISC.widget.pack({"side": "top"})
 
     def show(self):
         """
