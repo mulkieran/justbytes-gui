@@ -75,6 +75,12 @@ class Config(object):
     widget = property(lambda s: s.VALUE, doc="top level widget")
 
     def __init__(self, master, label_str):
+        """
+        Initializer.
+
+        :param Tkinter.Widget master: the master widget
+        :param str label_str: how to label the top-level widget
+        """
         self._field_vars = dict()
 
         self.VALUE = Tkinter.LabelFrame(master, text=label_str)
@@ -229,6 +235,11 @@ class RangeFrame(Tkinter.Frame):
         return button_frame
 
     def __init__(self, master=None):
+        """
+        Initializer.
+
+        :param Tkinter.Widget master: the master
+        """
         Tkinter.Frame.__init__(self, master)
         self.value = None
         self.pack()

@@ -82,6 +82,7 @@ class Entry(object):
 
     widget = abc.abstractproperty(doc="top-level widget")
 
+
 class JustEntry(Entry):
     """
     Entry for JustSelector.
