@@ -62,6 +62,16 @@ class Config(object):
 
         return kwargs
 
+    def set(self, config):
+        """
+        Set the members according to ``config``.
+
+        :param config: a configuration
+        :type config: a justbytes configuration
+        """
+        for config_attr in self._FIELD_MAP.keys():
+            self._field_vars[config_attr].set(getattr(config, config_attr))
+
     widget = property(lambda s: s.VALUE, doc="top level widget")
 
     def __init__(self, master, label_str):
@@ -200,11 +210,14 @@ class RangeFrame(Tkinter.Frame):
         self.value = None
         self.pack()
 
-        show_button = Tkinter.Button(self, text="Show", command=self.show)
-        show_button.pack({"side": "bottom"})
-
         quit_button = Tkinter.Button(self, text="Quit", command=self.quit)
         quit_button.pack({"side": "bottom"})
+
+        reset_button = Tkinter.Button(self, text="Reset", command=self.reset)
+        reset_button.pack({"side": "bottom"})
+
+        show_button = Tkinter.Button(self, text="Show", command=self.show)
+        show_button.pack({"side": "bottom"})
 
         self.DISPLAY_STR = Tkinter.StringVar()
         display_label = Tkinter.Label(
@@ -233,6 +246,20 @@ class RangeFrame(Tkinter.Frame):
         self.STRIP.widget.pack({"side": "top"})
         self.MISC = MiscDisplayConfig(display, "Miscellaneous Display Options")
         self.MISC.widget.pack({"side": "top"})
+
+    def reset(self):
+        """
+        Reset to defaults and show.
+        """
+        self.VALUE.set(justbytes.ValueConfig())
+
+        display_config = justbytes.DisplayConfig()
+        self.BASE.set(display_config.base_config)
+        self.DIGITS.set(display_config.digits_config)
+        self.STRIP.set(display_config.strip_config)
+        self.MISC.set(display_config)
+
+        self.show()
 
     def show(self):
         """

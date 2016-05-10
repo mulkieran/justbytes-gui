@@ -71,6 +71,15 @@ class Entry(object):
         """
         raise NotImplementedError() # pragma: no cover
 
+    @abc.abstractmethod
+    def set(self, value):
+        """
+        Set the value.
+
+        :param object value: the value to set
+        """
+        raise NotImplementedError() # pragma: no cover
+
     widget = abc.abstractproperty(doc="top-level widget")
 
 class JustEntry(Entry):
@@ -112,6 +121,9 @@ class JustEntry(Entry):
     def get(self):
         return self.PYTHON_TYPE(self.VAR.get())
 
+    def set(self, value):
+        self.VAR.set(value if isinstance(value, bool) else str(value))
+
 
 class MaybeEntry(Entry):
     """
@@ -147,6 +159,10 @@ class MaybeEntry(Entry):
 
     def get(self):
         return None if self.NONE_VAR.get() else self.ENTRY.get()
+
+    def set(self, value):
+        self.NONE_VAR.set(value is None)
+        self.ENTRY.set(value)
 
 
 class ChoiceEntry(Entry):
@@ -212,3 +228,14 @@ class ChoiceEntry(Entry):
             return None
         else:
             return self._INDICES[index]
+
+    def set(self, value):
+        index = -1 if value is None else self._CHOICES[value]
+        if hasattr(self, 'CHOICES'):
+            if index == -1:
+                self.CHOICES.selection_clear(0, Tkinter.END)
+            else:
+                self.CHOICES.activate(index)
+                self.CHOICES.see(index)
+        else:
+            self.VAR.set(index)
