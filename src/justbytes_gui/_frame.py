@@ -205,19 +205,36 @@ class RangeFrame(Tkinter.Frame):
     """
     # pylint: disable=too-many-instance-attributes
 
+    def _get_button_frame(self):
+        """
+        Make the bottom button frame.
+
+        :returns: the enclosing frame for the buttons
+        :rtype: Tkinter.Frame
+        """
+        button_frame = Tkinter.Frame(self)
+
+        quit_button = \
+           Tkinter.Button(button_frame, text="Quit", command=self.quit)
+        quit_button.pack({"side": "right"})
+
+        reset_button = \
+           Tkinter.Button(button_frame, text="Reset", command=self.reset)
+        reset_button.pack({"side": "right"})
+
+        show_button = \
+           Tkinter.Button(button_frame, text="Show", command=self.show)
+        show_button.pack({"side": "right"})
+
+        return button_frame
+
     def __init__(self, master=None):
         Tkinter.Frame.__init__(self, master)
         self.value = None
         self.pack()
 
-        quit_button = Tkinter.Button(self, text="Quit", command=self.quit)
-        quit_button.pack({"side": "bottom"})
-
-        reset_button = Tkinter.Button(self, text="Reset", command=self.reset)
-        reset_button.pack({"side": "bottom"})
-
-        show_button = Tkinter.Button(self, text="Show", command=self.show)
-        show_button.pack({"side": "bottom"})
+        button_frame = self._get_button_frame()
+        button_frame.pack({"side": "bottom"})
 
         self.DISPLAY_STR = Tkinter.StringVar()
         display_label = Tkinter.Label(
