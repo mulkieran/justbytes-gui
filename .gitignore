@@ -1,4 +1,7 @@
 .cache
+.coverage
 .tox
+htmlcov
 *.pyc
 *.swp
+*.egg-info
