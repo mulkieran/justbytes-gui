@@ -1,7 +1,11 @@
 .cache
 .coverage
 .tox
+dist
 htmlcov
 *.pyc
 *.swp
 *.egg-info
+doc/_build
+doc/justbytes_gui
+doc/tests

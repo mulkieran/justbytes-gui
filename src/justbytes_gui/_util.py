@@ -13,9 +13,7 @@
 #
 # Anne Mulhern <mulhern@cs.wisc.edu>
 
-"""
-Highest level code for module.
-"""
+""" Utilities for module. """
 import Tkinter
 
 from decimal import Decimal
@@ -28,7 +26,7 @@ def getVar(python_type):
     Returns a Tkinter variable for the given python type.
 
     :param type python_type: the python type
-    :returns: appropriate Tkinter *Var object
+    :returns: appropriate Tkinter Var object
     :rtype: Tkinter.Variable
     """
     if python_type == bool:

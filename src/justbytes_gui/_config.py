@@ -35,9 +35,7 @@ from ._selectors import MaybeSelector
 
 @add_metaclass(abc.ABCMeta)
 class Config(object):
-    """
-    Top level class for configuration gadgets.
-    """
+    """ Top level class for configuration gadgets. """
     # pylint: disable=too-few-public-methods
 
     CONFIG = abc.abstractproperty(doc="associated configuration")
