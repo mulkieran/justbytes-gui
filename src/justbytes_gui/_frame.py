@@ -132,8 +132,15 @@ class RangeFrame(Tkinter.Frame):
             self.ERROR_STR.set(err)
             return
 
+        try:
+            self.DISPLAY_STR.set(
+               self.value.getString(value_config, display_config)
+            )
+        except justbytes.RangeError as err:
+            self.ERROR_STR.set(err)
+            return
+
         self.ERROR_STR.set("")
-        self.DISPLAY_STR.set(self.value.getString(value_config, display_config))
 
 
 def show(a_range):
