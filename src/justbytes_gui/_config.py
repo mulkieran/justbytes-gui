@@ -101,7 +101,7 @@ class BaseConfig(Config):
     """
     # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.base_config
+    CONFIG = justbytes.Config.STRING_CONFIG.DISPLAY_CONFIG.base_config
 
     _FIELD_MAP = {
        "use_prefix": ("Display base prefix?", JustSelector(bool)),
@@ -115,7 +115,7 @@ class StripConfig(Config):
     """
     # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.strip_config
+    CONFIG = justbytes.Config.STRING_CONFIG.DISPLAY_CONFIG.strip_config
 
     _FIELD_MAP = {
        "strip": ("Strip all trailing zeros?", JustSelector(bool)),
@@ -134,7 +134,7 @@ class DigitsConfig(Config):
     """
     # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG.digits_config
+    CONFIG = justbytes.Config.STRING_CONFIG.DISPLAY_CONFIG.digits_config
 
     _FIELD_MAP = {
        "separator": ("Separator:", JustSelector(str)),
@@ -149,7 +149,7 @@ class MiscDisplayConfig(Config):
     """
     # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.DISPLAY_CONFIG
+    CONFIG = justbytes.Config.STRING_CONFIG.DISPLAY_CONFIG
 
     _FIELD_MAP = {
        "show_approx_str":
@@ -163,7 +163,7 @@ class ValueConfig(Config):
     """
     # pylint: disable=too-few-public-methods
 
-    CONFIG = justbytes.RangeConfig.VALUE_CONFIG
+    CONFIG = justbytes.Config.STRING_CONFIG.VALUE_CONFIG
 
     _FIELD_MAP = {
        "base": ("Base:", JustSelector(int)),

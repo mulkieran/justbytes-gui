@@ -128,13 +128,18 @@ class RangeFrame(Tkinter.Frame):
                strip_config=strip_config,
                **self.MISC.get()
             )
+            string_config = justbytes.StringConfig(
+               value_config,
+               display_config,
+               justbytes.Config.STRING_CONFIG.DISPLAY_IMPL_CLASS
+            )
         except (GUIValueError, justbytes.RangeError) as err:
             self.ERROR_STR.set(err)
             return
 
         try:
             self.DISPLAY_STR.set(
-               self.value.getString(value_config, display_config)
+               self.value.getString(string_config)
             )
         except justbytes.RangeError as err:
             self.ERROR_STR.set(err)
