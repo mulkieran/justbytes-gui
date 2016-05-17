@@ -26,4 +26,4 @@ class VersionTestCase(unittest.TestCase):
 
     def testValue(self):
         """ That value is reasonable. """
-        self.assertEqual(justbytes_gui.__version__, '0.1.0')
+        self.assertEqual(justbytes_gui.__version__, '0.2.0')

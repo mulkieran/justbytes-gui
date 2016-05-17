@@ -19,7 +19,7 @@
 """
 Version info.
 """
-__version_info__ = (0, 1, 0, '')
+__version_info__ = (0, 2, 0, '')
 __version__ = "%s%s" % \
    (
       ".".join(str(x) for x in __version_info__[:3]),
