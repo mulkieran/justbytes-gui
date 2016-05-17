@@ -79,6 +79,14 @@ class RangeFrame(Tkinter.Frame):
         )
         display_label.pack({"side": "top"})
 
+        self.VALUE_STR = Tkinter.StringVar()
+        value_label = Tkinter.Label(
+           self,
+           textvariable=self.VALUE_STR,
+           font=("Courier", 18)
+        )
+        value_label.pack({"side": "top"})
+
         self.ERROR_STR = Tkinter.StringVar()
         self.ERROR_STR.set("")
         error = Tkinter.Label(self, textvariable=self.ERROR_STR, fg="red")
@@ -117,6 +125,8 @@ class RangeFrame(Tkinter.Frame):
         """
         Show the resulting string.
         """
+        self.VALUE_STR.set(str(self.value.magnitude))
+
         try:
             base_config = justbytes.BaseConfig(**self.BASE.get())
             value_config = justbytes.ValueConfig(**self.VALUE.get())
