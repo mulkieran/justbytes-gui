@@ -16,83 +16,14 @@
 """
 Highest level code for module.
 """
-import abc
 import decimal
-import Tkinter
-
-from six import add_metaclass
 
 import justbytes
 
-from ._errors import GUIValueError
-
-from ._gadgets import Entry
-
-from ._selectors import ChoiceSelector
-from ._selectors import JustSelector
-from ._selectors import MaybeSelector
-
-
-@add_metaclass(abc.ABCMeta)
-class Config(object):
-    """ Top level class for configuration gadgets. """
-    # pylint: disable=too-few-public-methods
-
-    CONFIG = abc.abstractproperty(doc="associated configuration")
-    _FIELD_MAP = abc.abstractproperty(doc="map from field names to gadgets")
-
-    def get(self):
-        """
-        Get a dictionary of values associated with this gadget.
-
-        :returns: a dictionary of value
-        :rtype: dict of str * object
-        """
-        kwargs = dict()
-
-        for config_attr in sorted(self._FIELD_MAP.keys()):
-            try:
-                kwargs[config_attr] = self._field_vars[config_attr].get()
-            except (ValueError, decimal.InvalidOperation):
-                raise GUIValueError(
-                   "value for \"%s\" could not be converted" % config_attr
-                )
-
-        return kwargs
-
-    def set(self, config):
-        """
-        Set the members according to ``config``.
-
-        :param config: a configuration
-        :type config: a justbytes configuration
-        """
-        for config_attr in self._FIELD_MAP.keys():
-            self._field_vars[config_attr].set(getattr(config, config_attr))
-
-    widget = property(lambda s: s.VALUE, doc="top level widget")
-
-    def __init__(self, master, label_str):
-        """
-        Initializer.
-
-        :param Tkinter.Widget master: the master widget
-        :param str label_str: how to label the top-level widget
-        """
-        self._field_vars = dict()
-
-        self.VALUE = Tkinter.LabelFrame(master, text=label_str)
-
-        for config_attr in sorted(self._FIELD_MAP.keys()):
-            (label_text, widget_selector) = self._FIELD_MAP[config_attr]
-            entry = Entry.getWidget(
-               self.VALUE,
-               widget_selector,
-               getattr(self.CONFIG, config_attr),
-               label_text
-            )
-            entry.widget.pack({"side": "top"})
-            self._field_vars[config_attr] = entry
+from justoptions_gui import Config
+from justoptions_gui import ChoiceSelector
+from justoptions_gui import JustSelector
+from justoptions_gui import MaybeSelector
 
 
 class BaseConfig(Config):

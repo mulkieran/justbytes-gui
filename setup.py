@@ -52,6 +52,7 @@ setuptools.setup(
     ],
     install_requires = [
         'justbytes>0.08',
+        'justoptions-gui',
         'six'
     ],
     package_dir={"": "src"},
